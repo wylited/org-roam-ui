@@ -400,8 +400,8 @@ unchanged."
      ("FILELESS" . t))
    'nil))
 
-(defun org-roam-ui--send-graphdata ()
-  "Get roam data, make JSON, send through websocket to org-roam-ui."
+(defun org-roam-ui--make-graphdata ()
+  "Get roam data and make JSON"
   (let* ((nodes-names
           [id
            file
@@ -452,9 +452,13 @@ unchanged."
     (when old
       (message "[org-roam-ui] You are not using the latest version of org-roam.
 This database model won't be supported in the future, please consider upgrading."))
-    (websocket-send-text org-roam-ui-ws-socket (json-encode
-                                                `((type . "graphdata")
-                                                  (data . ,response))))))
+    (json-encode
+     `((type . "graphdata")
+       (data . ,response)))))
+
+(defun org-roam-ui--send-graphdata ()
+  "Send roam data through websocket to org-roam-ui."
+  (websocket-send-text org-roam-ui-ws-socket (org-roam-ui--make-graphdata)))
 
 
 (defun org-roam-ui--filter-citations (links)
